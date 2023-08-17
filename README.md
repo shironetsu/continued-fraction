@@ -19,6 +19,7 @@ $$
   - "Another Proof of $e^{x/y}$ being irrational" https://arxiv.org/abs/2104.06263
   - "A simple continued fraction expansion for $e^n$" https://arxiv.org/abs/1909.13597
 - "Continued Fractions : Old and New (Natural extension of arithmetic algorithms and S-adic system)" https://repository.kulib.kyoto-u.ac.jp/dspace/handle/2433/243575
+- "ネイピア数eの連分数展開について" http://ja9nfo.web.fc2.com/math/202108ContiFracExpOfE.pdf
  
 - 未閲覧
   - J. H. McCabe, ‘On the Pad´e table for $e^x$ and the simple continued fractions for $e$ and $e^{L/M}$ ’, Ramanujan J. 19 (2009) 95–105.
