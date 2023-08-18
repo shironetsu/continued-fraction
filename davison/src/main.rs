@@ -1,28 +1,30 @@
 /* Rust translation of http://www.numbertheory.org/gnubc/davison */
 use nalgebra::Matrix2;
 
-trait IsPositive {
-    fn is_positive(&self) -> bool;
+trait IsNonNegative {
+    fn is_non_negative(&self) -> bool;
 }
 
-impl IsPositive for Matrix2<i128> {
-    fn is_positive(&self) -> bool {
+impl IsNonNegative for Matrix2<i128> {
+    fn is_non_negative(&self) -> bool {
         self.iter().all(|&x| x >= 0)
     }
 }
 
 fn nprod(a: &mut Matrix2<i128>, l: i128, m: i128) -> i128 {
-    *a = Matrix2::new(m + l, m, m, m - l);
-    let mut k = 1;
-    for i in 1.. {
-        k = i;
-        if a.is_positive() {
-            break;
-        }
+    *a = Matrix2::identity();
+    let mut k = 0;
+    loop {
         let t = (2 * k + 1) * m;
         *a *= Matrix2::new(t + l, t, t, t - l);
+        a.reduce();
+
+        if a.is_non_negative() {
+            break;
+        }
+        k += 1
     }
-    k - 1
+    k
 }
 
 fn gcd(m: i128, n: i128) -> i128 {
@@ -105,6 +107,7 @@ fn raney(
         }
     }
     *a = Matrix2::new(p, q, r, s);
+    a.reduce();
 }
 
 struct Davison {
@@ -122,13 +125,13 @@ fn davison(l: i128, m: i128, n: i128) -> Davison {
 
     let mut a = Matrix2::zeros();
     let k = nprod(&mut a, l, m);
-    a.reduce();
     let mut i = k;
     let j = k + n;
     while i <= j {
         if i > k {
             let t = (2 * i + 1) * m;
             a *= Matrix2::new(t + l, t, t, t - l);
+            a.reduce();
         }
         i += 1;
         raney(
@@ -140,7 +143,6 @@ fn davison(l: i128, m: i128, n: i128) -> Davison {
             &mut count,
             &mut a,
         );
-        a.reduce();
     }
 
     Davison {
@@ -150,7 +152,7 @@ fn davison(l: i128, m: i128, n: i128) -> Davison {
 }
 
 fn main() {
-    let l = 1;
+    let l = 3;
     let m = 2;
     let n = 100;
     let d = davison(l, m, n);
