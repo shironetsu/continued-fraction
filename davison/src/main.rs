@@ -63,6 +63,7 @@ fn reduce(a: i128, b: i128, c: i128, d: i128) -> i128 {
 }
 
 fn raney(
+    partial_quotientds: &mut Vec<i128>,
     globalr: &mut i128,
     globall: &mut i128,
     flagl: &mut bool,
@@ -90,7 +91,8 @@ fn raney(
             *flagr = true;
             if *flagl && *flagr {
                 *flagl = false;
-                print!("{},", *globall);
+                partial_quotientds.push(*globall);
+                //print!("{},", *globall);
                 *globall = 0;
                 *count += 1;
             }
@@ -107,7 +109,8 @@ fn raney(
             *flagl = true;
             if *flagr && *flagl {
                 *flagr = false;
-                print!("{},", globalr);
+                partial_quotientds.push(*globalr);
+                //print!("{},", globalr);
                 *globalr = 0;
                 *count += 1;
             }
@@ -124,8 +127,13 @@ fn raney(
     k
 }
 
-fn davison(l: i128, m: i128, n: i128) {
-    //auto g,i,j,k,t
+struct Davison {
+    count: i128,
+    partial_quotients: Vec::<i128>
+}
+
+fn davison(l: i128, m: i128, n: i128) -> Davison {
+    let mut partial_quotients = Vec::<i128>::new();
     let mut count = 0;
     let mut flagr = false;
     let mut flagl = false;
@@ -165,6 +173,7 @@ fn davison(l: i128, m: i128, n: i128) {
         }
         i += 1;
         t = raney(
+            &mut partial_quotients,
             &mut globalr,
             &mut globall,
             &mut flagl,
@@ -183,12 +192,19 @@ fn davison(l: i128, m: i128, n: i128) {
             globald = globald / g;
         }
     }
-    println!(
-        "...\nThe number of partial quotients found for e^({}/{}) is {}",
-        l, m, count
-    );
+
+    Davison {
+        count,
+        partial_quotients
+    }
 }
 
 fn main() {
-    davison(3, 2, 100);
+    let l = 3;
+    let m = 2;
+    let n = 100;
+    let d = davison(l, m, n);
+    println!("e^({}/{})", l , m);
+    println!("{:?}", d.partial_quotients);
+    println!("{}", d.count);
 }
