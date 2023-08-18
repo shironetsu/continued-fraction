@@ -1,41 +1,26 @@
 /* Rust translation of http://www.numbertheory.org/gnubc/davison */
+use nalgebra::Matrix2;
 
-fn positivity(a: i128, b: i128, c: i128, d: i128) -> bool {
-    a >= 0 && b >= 0 && c >= 0 && d >= 0
+trait IsPositive {
+    fn is_positive(&self) -> bool;
 }
 
-fn nprod(
-    globala: &mut i128,
-    globalb: &mut i128,
-    globalc: &mut i128,
-    globald: &mut i128,
-    l: i128,
-    m: i128,
-) -> i128 {
-    *globala = m + l;
-    *globalb = m;
-    *globalc = m;
-    *globald = m - l;
+impl IsPositive for Matrix2<i128> {
+    fn is_positive(&self) -> bool {
+        self.iter().all(|&x| x >= 0)
+    }
+}
+
+fn nprod(a: &mut Matrix2<i128>, l: i128, m: i128) -> i128 {
+    *a = Matrix2::new(m + l, m, m, m - l);
     let mut k = 1;
     for i in 1.. {
         k = i;
-        let s = positivity(*globala, *globalb, *globalc, *globald);
-        if s {
+        if a.is_positive() {
             break;
         }
         let t = (2 * k + 1) * m;
-        let t1 = *globala + *globalb;
-        let t2 = *globalc + *globald;
-        let temp1 = t * t1;
-        let temp2 = t * t2;
-        let a1 = temp1 + *globala * l;
-        let b1 = temp1 - *globalb * l;
-        let c1 = temp2 + *globalc * l;
-        let d1 = temp2 - *globald * l;
-        *globala = a1;
-        *globalb = b1;
-        *globalc = c1;
-        *globald = d1;
+        *a *= Matrix2::new(t + l, t, t, t - l);
     }
     k - 1
 }
@@ -55,11 +40,15 @@ fn gcd(m: i128, n: i128) -> i128 {
     b
 }
 
-fn reduce(a: i128, b: i128, c: i128, d: i128) -> i128 {
-    let mut g = gcd(a, b);
-    g = gcd(g, c);
-    g = gcd(g, d);
-    g
+trait Reduce {
+    fn reduce(&mut self);
+}
+
+impl Reduce for Matrix2<i128> {
+    fn reduce(&mut self) {
+        let g = self.iter().cloned().reduce(|acc, x| gcd(acc, x)).unwrap();
+        *self /= g;
+    }
 }
 
 fn raney(
@@ -69,16 +58,13 @@ fn raney(
     flagl: &mut bool,
     flagr: &mut bool,
     count: &mut i128,
-    globala: &mut i128,
-    globalb: &mut i128,
-    globalc: &mut i128,
-    globald: &mut i128,
-) -> i128 {
+    a: &mut Matrix2<i128>,
+) {
     let mut k = 0;
-    let mut p = *globala;
-    let mut q = *globalb;
-    let mut r = *globalc;
-    let mut s = *globald;
+    let mut p = *a.index((0, 0));
+    let mut q = *a.index((0, 1));
+    let mut r = *a.index((1, 0));
+    let mut s = *a.index((1, 1));
     loop {
         let mut i = 0;
         while p >= r && q >= s {
@@ -92,7 +78,6 @@ fn raney(
             if *flagl && *flagr {
                 *flagl = false;
                 partial_quotientds.push(*globall);
-                //print!("{},", *globall);
                 *globall = 0;
                 *count += 1;
             }
@@ -110,7 +95,6 @@ fn raney(
             if *flagr && *flagl {
                 *flagr = false;
                 partial_quotientds.push(*globalr);
-                //print!("{},", globalr);
                 *globalr = 0;
                 *count += 1;
             }
@@ -120,16 +104,12 @@ fn raney(
             break;
         }
     }
-    *globala = p;
-    *globalb = q;
-    *globalc = r;
-    *globald = s;
-    k
+    *a = Matrix2::new(p, q, r, s);
 }
 
 struct Davison {
     count: i128,
-    partial_quotients: Vec::<i128>
+    partial_quotients: Vec<i128>,
 }
 
 fn davison(l: i128, m: i128, n: i128) -> Davison {
@@ -140,71 +120,41 @@ fn davison(l: i128, m: i128, n: i128) -> Davison {
     let mut globalr = 0;
     let mut globall = 0;
 
-    let mut globala = 0;
-    let mut globalb = 0;
-    let mut globalc = 0;
-    let mut globald = 0;
-    let k = nprod(&mut globala, &mut globalb, &mut globalc, &mut globald, l, m);
-    let mut g = reduce(globala, globalb, globalc, globald);
-    let mut t = 0;
-    if g > 1 {
-        globala = globala / g;
-        globalb = globalb / g;
-        globalc = globalc / g;
-        globald = globald / g;
-    }
+    let mut a = Matrix2::zeros();
+    let k = nprod(&mut a, l, m);
+    a.reduce();
     let mut i = k;
     let j = k + n;
     while i <= j {
         if i > k {
-            t = (2 * i + 1) * m;
-            let t1 = globala + globalb;
-            let t2 = globalc + globald;
-            let temp1 = t * t1;
-            let temp2 = t * t2;
-            let a1 = temp1 + globala * l;
-            let b1 = temp1 - globalb * l;
-            let c1 = temp2 + globalc * l;
-            let d1 = temp2 - globald * l;
-            globala = a1;
-            globalb = b1;
-            globalc = c1;
-            globald = d1;
+            let t = (2 * i + 1) * m;
+            a *= Matrix2::new(t + l, t, t, t - l);
         }
         i += 1;
-        t = raney(
+        raney(
             &mut partial_quotients,
             &mut globalr,
             &mut globall,
             &mut flagl,
             &mut flagr,
             &mut count,
-            &mut globala,
-            &mut globalb,
-            &mut globalc,
-            &mut globald,
+            &mut a,
         );
-        g = reduce(globala, globalb, globalc, globald);
-        if g > 1 {
-            globala = globala / g;
-            globalb = globalb / g;
-            globalc = globalc / g;
-            globald = globald / g;
-        }
+        a.reduce();
     }
 
     Davison {
         count,
-        partial_quotients
+        partial_quotients,
     }
 }
 
 fn main() {
-    let l = 3;
+    let l = 1;
     let m = 2;
     let n = 100;
     let d = davison(l, m, n);
-    println!("e^({}/{})", l , m);
+    println!("e^({}/{})", l, m);
     println!("{:?}", d.partial_quotients);
     println!("{}", d.count);
 }
