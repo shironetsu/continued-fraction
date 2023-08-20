@@ -1,6 +1,7 @@
 /* Rust translation of http://www.numbertheory.org/gnubc/davison */
 use nalgebra::Matrix2;
-
+use davison::{FromPartialQuotients};
+use rug::Rational;
 trait IsNonNegative {
     fn is_non_negative(&self) -> bool;
 }
@@ -154,5 +155,9 @@ fn main() {
     let d = davison(p, q, n);
     println!("e^({}/{})", p, q);
     println!("{:?}", d.partial_quotients);
-    println!("{}", d.count);
+    //println!("{}", d.count);
+    for n in 1..=10{
+        let r = Rational::from_partial_quotients(d.partial_quotients.iter().cloned().take(n).collect()).recip();
+        println!("{} {} {}", n, r, r.to_f64());
+    }
 }
