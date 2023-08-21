@@ -74,9 +74,11 @@ $$
 | $9$ | $102355/458752$ | $0.22311619349888392\cdots$ |
 | $10$ | $10236229/45875200$ | $0.22313208443777902\cdots$ |
 
-これを見ると、テイラー近似によって真の値に近づく様子が分かる。しかし、近似値がなす列の中に $2/9$ というそこそこ良い近似が現れない。$2/9$ を、$e^{-3/2}$ の近似値として何らかの方法で特徴付けられないだろうか？
+これを見ると、テイラー近似によって真の値に近づく様子が分かる。しかし、近似値がなす列の中に $2/9$ という「そこそこ良い近似」が現れない。$2/9$ という有理数を、$e^{-3/2}$ の近似値として何らかの方法で特徴付けられないだろうか？
 
 ## 連分数
+
+答え：連分数
 
 $$
 e^{-3/2} = \frac{1}{\displaystyle 4+\frac{1}{\displaystyle 2+\frac{1}{\displaystyle 13+\frac{1}{\displaystyle 6+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 6+\frac{1}{\ddots}}}}}}}}
@@ -99,6 +101,8 @@ $$
 
 ## Links
 - Wikipedia https://en.wikipedia.org/wiki/Continued_fraction
+- OEIS A001203 https://oeis.org/A001203
+  - $\pi$ の連分数展開
 - OEIS A003417 https://oeis.org/A003417
   - リンクに有用な資料多数あり。
 - Finding the continued fraction of e^(l/m) http://www.numbertheory.org/php/davison.html
