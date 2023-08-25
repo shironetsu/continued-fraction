@@ -1,7 +1,7 @@
 # continued-fraction
 
 $$
-e = 2 + \frac{1}{2+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 4+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 6+\frac{1}{\ddots}}}}}}}}
+e = 2 + \frac{1}{1 + \frac{1}{\displaystyle 2+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 4+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 6+\frac{1}{\ddots}}}}}}}}}
 $$
 
 ## シャニマスの期間限定ガシャで天井する確率はだいたい2/9
@@ -70,9 +70,9 @@ $$
 | $3$ | $1/16$ | $0.0625$ |
 | $4$ | $35/128$ | $0.2734375$ |
 | $5$ | $269/1280$ | $0.21015625$ |
-| $6$ | $1157/5120$ | $0.22597656249999998$ |
-| $7$ | $3191/14336$ | $0.22258649553571427\cdots$ |
-| $8$ | $256009/1146880$ | $0.22322213309151784\cdots$ |
+| $6$ | $1157/5120$ | $0.2259765625$ |
+| $7$ | $3191/14336$ | $0.2225864955357\cdots$ |
+| $8$ | $256009/1146880$ | $0.2232221330915\cdots$ |
 | $9$ | $102355/458752$ | $0.22311619349888392\cdots$ |
 | $10$ | $10236229/45875200$ | $0.22313208443777902\cdots$ |
 
@@ -102,8 +102,10 @@ $$
 
 ## 再びテイラー展開
 
+次の関数を考える:
+
 $$
-f(x) = \left( 1 - x \right) ^ {\alpha / x}
+f(x) := \left( 1 - x \right) ^ {\alpha / x}.
 $$
 
 上のケースは $x = 1/200, \alpha = 3/2$。
