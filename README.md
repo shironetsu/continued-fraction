@@ -1,7 +1,9 @@
 # continued-fraction
 
 $$
-e = 2 + \frac{1}{1 + \frac{1}{\displaystyle 2+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 4+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 6+\frac{1}{\ddots}}}}}}}}}
+\begin{align*}
+e = 2 + \frac{1}{\displaystyle 1 + \frac{1}{\displaystyle 2+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 4+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 1+\frac{1}{\displaystyle 6+\frac{1}{\ddots}}}}}}}}}
+\end{align*}
 $$
 
 ## シャニマスの期間限定ガシャで天井する確率はだいたい2/9
@@ -141,11 +143,14 @@ f(x) &= \exp\left( \frac{\alpha}{x} \log \left( 1 - x \right) \right) \\
 $$
 
 だいたい、
+
 $$
 \left(1-\frac{1}{200}\right) ^ {300}
 \simeq \left( 1 - \frac{3}{800} \right) e^{-3/2}.
 $$
+
 になるということ。実際に代入すると、
+
 $$
 \begin{align}
 (左辺) &= 0.2222921998 \cdots \\
@@ -153,6 +158,7 @@ $$
 \\
 \end{align}
 $$
+
 となって、小数点以下第5位まで一致する。
 
 ## exp(L/M) の近似値
