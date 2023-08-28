@@ -173,7 +173,7 @@ e^{2/k} &=
 \left\lbrack \overline{1, \frac{k-1}{2}+3\lambda k, 6 + 12\lambda k, \frac{5k-1}{2}+3\lambda k, 1} \right\rbrack_{\lambda\geq 0} & \text{if } k > 1,\  k \text{ is odd. }\\
 \left\lbrack 7, \overline{2+3\lambda, 1, 1, 3 + 3\lambda,  18 + 12\lambda } \right\rbrack_{\lambda\geq 0} & \text{if } k = 1.
 \end{array}
-\right.\\
+\right.,\\
 e^{1/k} &= 
 \left\{
 \begin{array}{ll}
@@ -235,3 +235,43 @@ $$
 - 未閲覧
   - J. H. McCabe, ‘On the Pad´e table for $e^x$ and the simple continued fractions for $e$ and $e^{L/M}$ ’, Ramanujan J. 19 (2009) 95–105.
     - https://www.researchgate.net/publication/237531137_On_the_Pad_table_for_e_x_and_the_simple_continued_fractions_for_e_and_e_LM
+
+# 一鉢二鉢一鉢二鉢の謎
+
+[exponential function \- 2\.71828\. And then another 1828\. \- Mathematics Stack Exchange](https://math.stackexchange.com/questions/764135/2-71828-and-then-another-1828)
+
+$$
+e = 2.7\underline{1828}\underline{1828}45904523\cdots
+$$
+
+[A001113 \- OEIS](https://oeis.org/A001113)
+
+なぜ `1828` が2回繰り返して現れるか？
+
+`1828` が循環する場合: 
+
+$$
+q = 2.7182818281828 \cdots = 2.7\dot{1}82\dot{8}
+= \frac{271801}{9999}
+$$
+
+連分数展開を比較する:
+
+$$
+\begin{align*}
+q &= \lbrack\ 2; 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 5\ \rbrack,\\
+e &= \lbrack\  2; 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, \cdots\ \rbrack,\\
+\end{align*}
+$$
+
+近似分数:
+
+$$
+\begin{gather}
+\lbrack\ 2; 1, 2, 1, 1, 4, 1, 1, 6, 1, 1\ \rbrack = \frac{2721}{1001},\\
+\lbrack\ 2; 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1\ \rbrack = \frac{49171}{18089},\\
+\lbrack\ 2; 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10\ \rbrack = \frac{517656}{190435}
+\end{gather}
+$$
+
+どんな「説明」に納得できるか？
