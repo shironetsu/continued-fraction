@@ -8,7 +8,4 @@ edition = "2021"
 [dependencies]
 nalgebra = "0.32.3"
 #num-traits = "0.2.16"
-rug = "1.20.1"
-
-#[features]
-#rug = ["num-traits"]
+rug = {version = "1.22.0", features = ["num-traits"]}

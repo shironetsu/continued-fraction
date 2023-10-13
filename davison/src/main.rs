@@ -1,23 +1,28 @@
-/* Rust translation of http://www.numbertheory.org/gnubc/davison */
+/* Rust re-implementation of http://www.numbertheory.org/gnubc/davison */
+use davison::{FromPartialQuotients, ToDecimal};
 use nalgebra::Matrix2;
-use davison::{FromPartialQuotients};
-use rug::Rational;
+use rug::{Integer, Rational};
 trait IsNonNegative {
     fn is_non_negative(&self) -> bool;
 }
 
-impl IsNonNegative for Matrix2<i128> {
+impl IsNonNegative for Matrix2<Integer> {
     fn is_non_negative(&self) -> bool {
-        self.iter().all(|&x| x >= 0)
+        self.iter().all(|x| *x >= 0)
     }
 }
 
-fn nprod(l: i128, m: i128) -> (Matrix2<i128>, i128) {
+fn nprod(l: Integer, m: Integer) -> (Matrix2<Integer>, Integer) {
     let mut a = Matrix2::identity();
-    let mut k = 0;
+    let mut k = Integer::ZERO;
     loop {
-        let t = (2 * k + 1) * m;
-        a *= Matrix2::new(t + l, t, t, t - l);
+        let t: Integer = (2 * k.clone() + 1) * m.clone();
+        a *= Matrix2::new(
+            t.clone() + l.clone(),
+            t.clone(),
+            t.clone(),
+            t.clone() - l.clone(),
+        );
         a.reduce();
 
         if a.is_non_negative() {
@@ -28,47 +33,37 @@ fn nprod(l: i128, m: i128) -> (Matrix2<i128>, i128) {
     (a, k)
 }
 
-fn gcd(m: i128, n: i128) -> i128 {
-    let mut a = m.abs();
-    if n == 0 {
-        return a;
-    }
-    let mut b = n.abs();
-    let mut c = a % b;
-    while c > 0 {
-        a = b;
-        b = c;
-        c = a % b;
-    }
-    b
-}
-
 trait Reduce {
     fn reduce(&mut self);
 }
 
-impl Reduce for Matrix2<i128> {
+impl Reduce for Matrix2<Integer> {
     fn reduce(&mut self) {
-        let g = self.iter().cloned().reduce(|acc, x| gcd(acc, x)).unwrap();
+        let g = self.iter().cloned().reduce(|acc, x| acc.gcd(&x)).unwrap();
         *self /= g;
     }
 }
 
 fn raney(
-    a: &mut Matrix2<i128>,
-    partial_quotients: &mut Vec<i128>,
-    r: &mut i128,
-    l: &mut i128,
+    a: &mut Matrix2<Integer>,
+    partial_quotients: &mut Vec<Integer>,
+    r: &mut Integer,
+    l: &mut Integer,
     flagl: &mut bool,
     flagr: &mut bool,
-    count: &mut i128,
+    count: &mut Integer,
 ) {
     let mut k = 0;
     let mut b = a.clone();
     loop {
         let mut i = 0;
-        while b.index((0,0)) >= b.index((1, 0)) && b.index((0, 1)) >= b.index((1, 1)) {
-            b = Matrix2::new(1, -1, 0, 1) * b;
+        while b.index((0, 0)) >= b.index((1, 0)) && b.index((0, 1)) >= b.index((1, 1)) {
+            b = Matrix2::new(
+                Integer::from(1),
+                Integer::from(-1),
+                Integer::from(0),
+                Integer::from(1),
+            ) * b;
             i = i + 1;
         }
         if i > 0 {
@@ -76,15 +71,20 @@ fn raney(
             *flagr = true;
             if *flagl && *flagr {
                 *flagl = false;
-                partial_quotients.push(*l);
-                *l = 0;
+                partial_quotients.push(l.clone());
+                *l = Integer::ZERO;
                 *count += 1;
             }
             k += 1;
         }
         let mut j = 0;
         while b.index((1, 0)) >= b.index((0, 0)) && b.index((1, 1)) >= b.index((0, 1)) {
-            b = Matrix2::new(1, 0, -1, 1) * b;
+            b = Matrix2::new(
+                Integer::from(1),
+                Integer::from(0),
+                Integer::from(-1),
+                Integer::from(1),
+            ) * b;
             j += 1;
         }
         if j > 0 {
@@ -92,8 +92,8 @@ fn raney(
             *flagl = true;
             if *flagr && *flagl {
                 *flagr = false;
-                partial_quotients.push(*r);
-                *r = 0;
+                partial_quotients.push(r.clone());
+                *r = Integer::ZERO;
                 *count += 1;
             }
             k = k + 1;
@@ -109,25 +109,32 @@ fn raney(
 }
 
 struct Davison {
-    count: i128,
-    partial_quotients: Vec<i128>,
+    count: Integer,
+    partial_quotients: Vec<Integer>,
 }
 
-fn davison(p: i128, q: i128, n: i128) -> Davison {
-    let mut partial_quotients = Vec::<i128>::new();
-    let mut count = 0;
+fn davison(p: Integer, q: Integer, n: Integer) -> Davison {
+    let mut partial_quotients = Vec::<Integer>::new();
+    assert!(p != 0 && q != 0, "p and q should be non-zero integers");
+    let (p, q) = {
+        if (p > 0 && q < 0) || (p < 0 && q > 0) {
+            partial_quotients.push(Integer::ZERO);
+        }
+        (p.abs(), q.abs())
+    };
+    let mut count = Integer::ZERO;
     let mut flagr = false;
     let mut flagl = false;
-    let mut r = 0;
-    let mut l = 0;
+    let mut r = Integer::ZERO;
+    let mut l = Integer::ZERO;
 
-    let (mut a, k) = nprod(p, q);
-    let mut i = k;
-    let j = k + n;
+    let (mut a, k) = nprod(p.clone(), q.clone());
+    let mut i = k.clone();
+    let j = k.clone() + n;
     while i <= j {
         if i > k {
-            let t = (2 * i + 1) * q;
-            a *= Matrix2::new(t + p, t, t, t - p);
+            let t: Integer = (2 * i.clone() + 1) * q.clone();
+            a *= Matrix2::new(t.clone() + p.clone(), t.clone(), t.clone(), t - p.clone());
             a.reduce();
         }
         i += 1;
@@ -149,15 +156,25 @@ fn davison(p: i128, q: i128, n: i128) -> Davison {
 }
 
 fn main() {
-    let p = 3;
+    let p = -3;
     let q = 2;
-    let n = 100;
-    let d = davison(p, q, n);
+    let n = 32;
+    let d = davison(Integer::from(p), Integer::from(q), Integer::from(n));
     println!("e^({}/{})", p, q);
-    println!("{:?}", d.partial_quotients);
-    //println!("{}", d.count);
-    for n in 1..=10{
-        let r = Rational::from_partial_quotients(d.partial_quotients.iter().cloned().take(n).collect()).recip();
-        println!("{} {} {}", n, r, r.to_f64());
+    println!(
+        "{}",
+        d.partial_quotients
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<_>>()
+            .join(",")
+    );
+    println!("{}", d.count);
+
+    for n in 1..=10 {
+        let r =
+            Rational::from_partial_quotients(d.partial_quotients.iter().cloned().take(n).collect());
+        let d = r.to_decimal(30);
+        println!("{} {} {}", n, r, d);
     }
 }

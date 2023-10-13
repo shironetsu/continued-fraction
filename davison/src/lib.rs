@@ -1,4 +1,4 @@
-use rug::{Rational, Integer};
+use rug::{ops::Pow, Integer, Rational};
 
 pub trait FromPartialQuotients<T> {
     fn from_partial_quotients(partial_quotients: Vec<T>) -> Rational;
@@ -53,10 +53,33 @@ impl_from_partial_quotients!(i32);
 impl_from_partial_quotients!(i64);
 impl_from_partial_quotients!(i128);
 
+pub trait ToDecimal {
+    fn to_decimal(&self, precision: u32) -> String;
+}
+
+impl ToDecimal for Rational {
+    fn to_decimal(&self, precision: u32) -> String {
+        let mut r = self.clone();
+        let mut v = Vec::<String>::new();
+        if r < 0 {
+            r *= -1;
+            v.push("-".to_string());
+        }
+        let mut floor = Integer::new();
+        r.fract_floor_mut(&mut floor);
+        v.push(floor.to_string());
+        v.push(".".to_string());
+        let a = (r * Integer::from(10).pow(precision)).floor();
+        v.push(a.to_string());
+
+        v.join("")
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rug::{Rational, Integer};
+    use rug::{Integer, Rational};
 
     #[test]
     fn from_partial_quotients_1() {
@@ -66,22 +89,44 @@ mod tests {
 
     #[test]
     fn from_partial_quotients_2() {
-        let r = Rational::from_partial_quotients(vec![3,7,15,1]);
+        let r = Rational::from_partial_quotients(vec![3, 7, 15, 1]);
         assert_eq!(r, Rational::from((355, 113)));
     }
 
     #[test]
     fn to_partial_quotients_1() {
         let p = Rational::from((34, 21)).to_partial_quotients();
-        assert_eq!(p,
-        vec![
-            Integer::from(1),
-            Integer::from(1),
-            Integer::from(1),
-            Integer::from(1),
-            Integer::from(1),
-            Integer::from(1),
-            Integer::from(2),
-        ])
+        assert_eq!(
+            p,
+            vec![
+                Integer::from(1),
+                Integer::from(1),
+                Integer::from(1),
+                Integer::from(1),
+                Integer::from(1),
+                Integer::from(1),
+                Integer::from(2),
+            ]
+        )
+    }
+
+    #[test]
+    fn to_decimal_works_1() {
+        assert_eq!("1.200", Rational::from((6, 5)).to_decimal(3));
+    }
+
+    #[test]
+    fn to_decimal_works_2() {
+        assert_eq!("-1.200", Rational::from((-6, 5)).to_decimal(3));
+    }
+
+    #[test]
+    fn to_decimal_works_3() {
+        assert_eq!("3.333", Rational::from((10, 3)).to_decimal(3));
+    }
+
+    #[test]
+    fn to_decimal_works_4() {
+        assert_eq!("-3.333", Rational::from((-10, 3)).to_decimal(3));
     }
 }
