@@ -120,7 +120,9 @@ $$
 
 $$
 \begin{align}
-\alpha = \lbrack a_0; a_1, a_2, \cdots \rbrack
+\alpha
+  &= a_0 + \frac{1}{\displaystyle a_1+\frac{1}{\displaystyle a_2+\frac{1}{\ddots}}} \\
+  &= \lbrack a_0; a_1, a_2, \cdots \rbrack
 \end{align}
 $$
 

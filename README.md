@@ -275,3 +275,46 @@ $$
 $$
 
 どんな「説明」に納得できるか？
+
+## 積分
+
+WIP
+
+$$
+T_n = \sum_{k=0}^n \frac{(-a)^k}{k!}
+$$
+
+$$
+I_n := \frac{(-1)^n}{n!}\int_{0}^a x^n e^x dx
+$$
+
+
+
+$$
+\begin{align}
+I_n
+&= \frac{(-1)^n}{n!}\lbrack x^n e^x\rbrack_{0}^a + \frac{(-1)^{n-1}}{(n-1)!}\int_{0}^a x^{n-1} e^x dx\\
+&= \frac{(-1)^n}{n!} a^n e^a + I_{n-1}\\
+&= e^a\sum_{k=0}^n (-1)^{k}\frac{a^k}{k!}
+\end{align}
+$$
+
+$$
+\begin{align}
+\sum_{k=0}^n I_k
+&= \sum_{k=0}^n (-1)^k \frac{(n-k+1)}{k!} a^k \\
+&= (n+1)\, T_n - \sum_{k=1}^n  \frac{(-a)^k}{(k-1)!}\\
+&= (n+1)\, T_n + a\, T_{n-1}\\
+&= (n+1+a)\, T_n + \frac{(-a)^{n+1}}{n!}
+\end{align}
+$$
+
+$$
+\int_{0}^1 \left(1-x+\frac{x^2}{2}-\frac{x^3}{6}\right) e^ x - 1\ dx
+$$
+
+$$
+44800/16481
+$$
+
+[A001113 \- OEIS](https://oeis.org/A001113)
